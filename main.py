@@ -28,7 +28,7 @@ async def create_recommendation(data: WhiskyData):
         response = openai.ChatCompletion.create(
             model="gpt-4o-mini",  # Use the correct chat model
             messages=messages,
-            max_tokens=100,  # Adjust tokens based on how much text you need
+            max_tokens=500,  # Adjust tokens based on how much text you need
             temperature=0.7,
         )
         recommendations = response["choices"][0]["message"]["content"].strip()  # Extract the recommendation text
