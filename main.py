@@ -23,7 +23,7 @@ async def create_recommendation(data: WhiskyData):
     # Send the prompt to ChatGPT and get the response
     try:
         response = openai.Completion.create(
-            engine="gpt-4",  # Or use the appropriate model like "gpt-3.5-turbo"
+            engine="gpt-4o mini",  # Or use the appropriate model like "gpt-3.5-turbo"
             prompt=prompt,
             max_tokens=100,  # Adjust tokens based on how much text you need
             temperature=0.7,
