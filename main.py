@@ -16,20 +16,22 @@ class WhiskyData(BaseModel):
 # Endpoint to handle the form data and generate whisky recommendations
 @app.post("/recommendation")
 async def create_recommendation(data: WhiskyData):
-    # Prepare the prompt for ChatGPT
+    # Prepare the message for ChatGPT
     whisky_list = ", ".join(data.whisky_preferences)  # Convert list to a comma-separated string
-    prompt = f"Based on these top 3 whiskies: {whisky_list}, give me 5 other whisky recommendations."
+    messages = [
+        {"role": "system", "content": "You are a whisky expert helping users discover new whiskies."},
+        {"role": "user", "content": f"Based on these top 3 whiskies: {whisky_list}, give me 5 other whisky recommendations."}
+    ]
 
-    # Send the prompt to ChatGPT and get the response
+    # Send the message to ChatGPT and get the response
     try:
-        response = openai.Completion.create(
-            engine="gpt-4o-mini",  # Or use the appropriate model like "gpt-3.5-turbo"
-            prompt=prompt,
+        response = openai.ChatCompletion.create(
+            model="gpt-4o-mini",  # Use the correct chat model
+            messages=messages,
             max_tokens=100,  # Adjust tokens based on how much text you need
             temperature=0.7,
         )
-        recommendations = response.choices[0].text.strip()  # Extract the recommendation text
+        recommendations = response["choices"][0]["message"]["content"].strip()  # Extract the recommendation text
         return {"email": data.email, "recommendations": recommendations}
     except Exception as e:
         return {"error": str(e)}
-
