@@ -60,8 +60,8 @@ async def create_recommendation(data: WhiskyData):
             json={"state": f"{recommendations}"},
         )
 
-        print(response.status_code)
-        print(response.json())
+        # print(response.status_code)
+        # print(response.json())
 
         return {"status": data.email, "recommendations": recommendations}
     except Exception as e:
