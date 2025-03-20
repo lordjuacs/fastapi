@@ -1,6 +1,6 @@
-fastapi==0.100.0
-hypercorn==0.14.4
-openai==0.27.0  # or the latest version
-uvicorn==0.18.3  # or the latest version
-python-dotenv==0.19.2  # Optional for managing environment variables
-requests==2.31.0   # For making HTTP requests to Omnisend API
+fastapi==0.115.11  # Latest version as of March 2025
+hypercorn==0.17.3  # Latest stable version
+openai==1.0.0      # Latest version of OpenAI Python SDK
+uvicorn==0.20.0    # Latest stable version for local testing/deployment
+python-dotenv==1.0.1  # Latest stable version for managing environment variables
+requests==2.31.0   # Latest stable version for HTTP requests
