@@ -3,3 +3,4 @@ hypercorn==0.14.4
 openai==0.27.0  # or the latest version
 uvicorn==0.18.3  # or the latest version
 python-dotenv==0.19.2  # Optional for managing environment variables
+requests==2.31.0   # For making HTTP requests to Omnisend API
