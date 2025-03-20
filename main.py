@@ -3,11 +3,10 @@ from pydantic import BaseModel
 import openai
 import os
 import requests
+from datetime import datetime
 
-# Set up the OpenAI API key (store it in your environment variables)
+# Load environment variables for API keys
 openai.api_key = os.getenv("OPENAI_API_KEY")
-
-# Omnisend API Key (also store this securely in environment variables)
 OMNISEND_API_KEY = os.getenv("OMNISEND_API_KEY")
 
 app = FastAPI()
@@ -28,19 +27,25 @@ def update_omnisend_contact(email: str, recommendation: str):
         "email": email,
         "fields": {
             "whisky_recommendation": recommendation
-        }
+        },
+        "status": "subscribed",  # Mandatory field for Omnisend contact creation/update
+        "statusDate": datetime.utcnow().isoformat() + "+00:00"  # Current timestamp in ISO format
     }
-    response = requests.post(url, json=data, headers=headers)
-    if response.status_code in [200, 201]:
-        print("Successfully updated Omnisend contact.")
-    else:
-        print(f"Failed to update Omnisend contact: {response.status_code} - {response.text}")
+
+    try:
+        response = requests.post(url, json=data, headers=headers)
+        if response.status_code in [200, 201]:
+            print("Successfully updated Omnisend contact.")
+        else:
+            print(f"Failed to update Omnisend contact: {response.status_code} - {response.text}")
+    except Exception as e:
+        print(f"Error while updating Omnisend contact: {str(e)}")
 
 # Endpoint to handle the form data and generate whisky recommendations
 @app.post("/recommendation")
 async def create_recommendation(data: WhiskyData):
     # Prepare the message for ChatGPT
-    whisky_list = ", ".join(data.whisky_preferences)
+    whisky_list = ", ".join(data.whisky_preferences)  # Convert list to a comma-separated string
     messages = [
         {"role": "system", "content": "You are a whisky expert helping users discover new whiskies."},
         {"role": "user", "content": f"Based on these top 3 whiskies: {whisky_list}, give me 5 other whisky recommendations."}
@@ -49,12 +54,12 @@ async def create_recommendation(data: WhiskyData):
     # Send the message to ChatGPT and get the response
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-4o-mini",
+            model="gpt-4",
             messages=messages,
             max_tokens=500,
             temperature=0.7,
         )
-        recommendations = response["choices"][0]["message"]["content"].strip()
+        recommendations = response["choices"][0]["message"]["content"].strip()  # Extract the recommendation text
 
         # Store recommendation back into Omnisend immediately after generation
         update_omnisend_contact(data.email, recommendations)
